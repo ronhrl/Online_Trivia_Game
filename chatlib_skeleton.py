@@ -7,29 +7,52 @@ MSG_HEADER_LENGTH = CMD_FIELD_LENGTH + 1 + LENGTH_FIELD_LENGTH + 1  # Exact size
 MAX_MSG_LENGTH = MSG_HEADER_LENGTH + MAX_DATA_LENGTH  # Max size of total message
 DELIMITER = "|"  # Delimiter character in protocol
 DATA_DELIMITER = "#"  # Delimiter in the data part of the message
+LOGIN_MSG = "LOGIN           "
+LOGOUT_MSG = "LOGOUT          "
+LOGGED_MSG = "LOGGED          "
+GET_QUESTION_MSG = "GET_QUESTION    "
+SEND_ANSWER_MSG = "SEND_ANSWER     "
+MY_SCORE_MSG = "MY_SCORE        "
+HIGH_SCORE_MSG = "HIGHSCORE       "
+
+
+
 
 # Protocol Messages 
 # In this dictionary we will have all the client and server command names
 
 PROTOCOL_CLIENT = {
     "login_msg": "LOGIN",
-    "logout_msg": "LOGOUT"
+    "logout_msg": "LOGOUT",
+    "logged_msg": "LOGGED",
+    "get_question_msg": "GET_QUESTION",
+    "send_answer_msg": "SED_ANSWER",
+    "my_score_msg": "MY_SCORE",
+    "high_score_msg": "HIGHSCORE",
 }  # .. Add more commands if needed
 
 PROTOCOL_SERVER = {
     "login_ok_msg": "LOGIN_OK",
-    "login_failed_msg": "ERROR"
+    "login_failed_msg": "ERROR",
+    "logged_answer_msg": "LOGGED_ANSWER",
+    "your_question_msg": "YOUR_QUESTION",
+    "correct_answer_msg": "CORRECT_ANSWER",
+    "wrong_answer_msg": "WRONG_ANSWER",
+    "your_score_msg": "YOUR_SCORE",
+    "all_score_msg": "ALL_SCORE",
+    "no_question_msg": "NO_QUESTION"
 }  # ..  Add more commands if needed
 
 # Other constants
 
 ERROR_RETURN = None  # What is returned in case of an error
 
+def build_message(cmd, data):
     """
     Gets command name (str) and data field (str) and creates a valid protocol message
     Returns: str, or None if error occured
     """
-def build_message(cmd, data):
+
     data_len_in = len(data)
     cmd_len = len(cmd)
     data_len_out = ""
@@ -67,9 +90,9 @@ def parse_message(data):
     """
     # Implement code ...
     list_data = data.split("|")
-    list_to_return = list()
-    if list_data[0] != "LOGIN" or list_data[0] != "LOGOUT" or list_data[0] != "LOGGED" or list_data[0] != "GET_QUESTION" \
-            or list_data[0] != "SEND_ANSWER" or list_data[0] != "MY_SCORE" or list_data[0] != "HIGHSCORE":
+    if list_data[0] != LOGIN_MSG or list_data[0] != LOGOUT_MSG or list_data[0] != LOGGED_MSG \
+            or list_data[0] != GET_QUESTION_MSG or list_data[0] != SEND_ANSWER_MSG \
+            or list_data[0] != MY_SCORE_MSG or list_data[0] != HIGH_SCORE_MSG:
         cmd = ERROR_RETURN
         msg = ERROR_RETURN
     else:
@@ -85,7 +108,6 @@ def split_data(msg, expected_fields):
     Returns: list of fields if all ok. If some error occured, returns None
     """
     # Implement code ...
-    list_of_words = list()
     list_of_words = msg.split(DATA_DELIMITER)
     error_list = list()
     if len(list_of_words) > expected_fields:
