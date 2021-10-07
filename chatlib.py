@@ -89,12 +89,28 @@ def parse_message(data):
     """
     # Implement code ...
     list_data = data.split("|")
-    print(list_data)
+    if len(list_data) < 3:
+        cmd = ERROR_RETURN
+        msg = ERROR_RETURN
+        return cmd, msg
+    list_cmd_length = list_data[1].split(" ")
+    for word in list_cmd_length:
+        if word.lstrip('-').isdigit():
+            num = word
     if "LOGIN" not in list_data[0] and "LOGOUT" not in list_data[0] and "LOGGED" not in list_data[0] \
             and "GET_QUESTION" not in list_data[0] and "SEND_ANSWER" not in list_data[0] \
             and "MY_SCORE" not in list_data[0] and "HYSCORE" not in list_data[0]:
         cmd = ERROR_RETURN
         msg = ERROR_RETURN
+        return cmd, msg
+    elif list_cmd_length[-1].isalpha():
+        cmd = ERROR_RETURN
+        msg = ERROR_RETURN
+        return cmd, msg
+    elif int(num) < 0:
+        cmd = ERROR_RETURN
+        msg = ERROR_RETURN
+        return cmd, msg
     else:
         list_cmd = list_data[0].split(" ")
         for word in list_cmd:
@@ -150,12 +166,15 @@ def check_parse(msg_str, expected_output):
 
 
 def main():
-    check_parse("", (None, None))
-    check_parse("LOGIN           x	  4|data", (None, None))
-    check_parse("LOGIN           |	  4xdata", (None, None))
+    check_parse("LOGIN           |9   |aaaa#bbbb", ("LOGIN", "aaaa#bbbb"))
+    check_parse("LOGIN           |9   | aaa#bbbb", ("LOGIN", " aaa#bbbb"))
     check_parse("LOGIN           |	 -4|data", (None, None))
-    check_parse("LOGIN           |	  z|data", (None, None))
-    check_parse("LOGIN           |	  5|data", (None, None))
+    # check_parse("", (None, None))
+    # check_parse("LOGIN           x	  4|data", (None, None))
+    # check_parse("LOGIN           |	  4xdata", (None, None))
+    # check_parse("LOGIN           |	 -4|data", (None, None))
+    # check_parse("LOGIN           |	  z|data", (None, None))
+    # check_parse("LOGIN           |	  5|data", (None, None))
 
 
 if __name__ == '__main__':
