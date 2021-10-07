@@ -15,10 +15,7 @@ SEND_ANSWER_MSG = "SEND_ANSWER     "
 MY_SCORE_MSG = "MY_SCORE        "
 HIGH_SCORE_MSG = "HIGHSCORE       "
 
-
-
-
-# Protocol Messages 
+# Protocol Messages
 # In this dictionary we will have all the client and server command names
 
 PROTOCOL_CLIENT = {
@@ -47,6 +44,7 @@ PROTOCOL_SERVER = {
 
 ERROR_RETURN = None  # What is returned in case of an error
 
+
 def build_message(cmd, data):
     """
     Gets command name (str) and data field (str) and creates a valid protocol message
@@ -59,29 +57,30 @@ def build_message(cmd, data):
     full_msg = ""
     if 10 > data_len_in >= 0:
         data_len_out += "000"
-        data_len_out += data_len_in
+        data_len_out += str(data_len_in)
     elif 100 > data_len_in > 9:
         data_len_out += "00"
-        data_len_out += data_len_in
+        data_len_out += str(data_len_in)
     elif 1000 > data_len_in > 99:
         data_len_out += "0"
-        data_len_out += data_len_in
+        data_len_out += str(data_len_in)
     elif 10000 > data_len_in > 999:
-        data_len_out = data_len_in
+        data_len_out = str(data_len_in)
     else:
-       return ERROR_RETURN
-    if cmd != "LOGIN" or cmd != "LOGOUT" or cmd != "LOGGED" or cmd != "GET_QUESTION" \
-            or cmd != "SEND_ANSWER" or cmd != "MY_SCORE" or cmd != "HIGHSCORE":
+        return ERROR_RETURN
+    if cmd != "LOGIN" and cmd != "LOGOUT" and cmd != "LOGGED" and cmd != "GET_QUESTION" \
+            and cmd != "SEND_ANSWER" and cmd != "MY_SCORE" and cmd != "HIGHSCORE":
         return ERROR_RETURN
     else:
         full_msg += cmd
-        for i in range(0, 17 - cmd_len):
+        for i in range(0, 16 - cmd_len):
             full_msg += " "
         full_msg += DELIMITER
         full_msg += data_len_out
         full_msg += DELIMITER
         full_msg += data
         return full_msg
+
 
 def parse_message(data):
     """
@@ -90,13 +89,19 @@ def parse_message(data):
     """
     # Implement code ...
     list_data = data.split("|")
-    if list_data[0] != LOGIN_MSG or list_data[0] != LOGOUT_MSG or list_data[0] != LOGGED_MSG \
-            or list_data[0] != GET_QUESTION_MSG or list_data[0] != SEND_ANSWER_MSG \
-            or list_data[0] != MY_SCORE_MSG or list_data[0] != HIGH_SCORE_MSG:
+    print(list_data)
+    if "LOGIN" not in list_data[0] and "LOGOUT" not in list_data[0] and "LOGGED" not in list_data[0] \
+            and "GET_QUESTION" not in list_data[0] and "SEND_ANSWER" not in list_data[0] \
+            and "MY_SCORE" not in list_data[0] and "HYSCORE" not in list_data[0]:
         cmd = ERROR_RETURN
         msg = ERROR_RETURN
     else:
-
+        list_cmd = list_data[0].split(" ")
+        for word in list_cmd:
+            if word != "":
+                cmd = word
+                break
+        msg = list_data[2]
     # The function should return 2 values
     return cmd, msg
 
@@ -128,3 +133,30 @@ def join_data(msg_fields):
         join_list.append(DATA_DELIMITER)
     join_list.append(msg_fields[len(msg_fields) - 1])
     return join_list
+
+
+def check_parse(msg_str, expected_output):
+    print("Input: ", msg_str, "\nExpected output: ", expected_output)
+
+    try:
+        output = parse_message(msg_str)
+    except Exception as e:
+        output = "Exception raised: " + str(e)
+
+    if output == expected_output:
+        print(".....\t SUCCESS")
+    else:
+        print(".....\t FAILED, output: ", output)
+
+
+def main():
+    check_parse("", (None, None))
+    check_parse("LOGIN           x	  4|data", (None, None))
+    check_parse("LOGIN           |	  4xdata", (None, None))
+    check_parse("LOGIN           |	 -4|data", (None, None))
+    check_parse("LOGIN           |	  z|data", (None, None))
+    check_parse("LOGIN           |	  5|data", (None, None))
+
+
+if __name__ == '__main__':
+    main()
