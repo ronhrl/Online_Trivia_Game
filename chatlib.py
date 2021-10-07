@@ -7,13 +7,13 @@ MSG_HEADER_LENGTH = CMD_FIELD_LENGTH + 1 + LENGTH_FIELD_LENGTH + 1  # Exact size
 MAX_MSG_LENGTH = MSG_HEADER_LENGTH + MAX_DATA_LENGTH  # Max size of total message
 DELIMITER = "|"  # Delimiter character in protocol
 DATA_DELIMITER = "#"  # Delimiter in the data part of the message
-LOGIN_MSG = "LOGIN           "
-LOGOUT_MSG = "LOGOUT          "
-LOGGED_MSG = "LOGGED          "
-GET_QUESTION_MSG = "GET_QUESTION    "
-SEND_ANSWER_MSG = "SEND_ANSWER     "
-MY_SCORE_MSG = "MY_SCORE        "
-HIGH_SCORE_MSG = "HIGHSCORE       "
+# LOGIN_MSG = "LOGIN           "
+# LOGOUT_MSG = "LOGOUT          "
+# LOGGED_MSG = "LOGGED          "
+# GET_QUESTION_MSG = "GET_QUESTION    "
+# SEND_ANSWER_MSG = "SEND_ANSWER     "
+# MY_SCORE_MSG = "MY_SCORE        "
+# HIGH_SCORE_MSG = "HIGHSCORE       "
 
 # Protocol Messages
 # In this dictionary we will have all the client and server command names
