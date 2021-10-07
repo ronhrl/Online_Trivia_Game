@@ -73,7 +73,7 @@ def parse_message(data):
         cmd = ERROR_RETURN
         msg = ERROR_RETURN
     else:
-        
+
     # The function should return 2 values
     return cmd, msg
 
