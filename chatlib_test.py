@@ -26,7 +26,8 @@ def check_parse(msg_str, expected_output):
 		print(".....\t SUCCESS")
 	else:
 		print(".....\t FAILED, output: ", output)		
-	
+
+
 def main():
 
 	# BUILD
