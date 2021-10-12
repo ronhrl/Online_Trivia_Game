@@ -4,6 +4,7 @@
 
 import socket
 import chatlib
+import select
 
 # GLOBALS
 users = {}
@@ -19,7 +20,11 @@ SERVER_IP = "127.0.0.1"
 
 def build_and_send_message(conn, code, msg):
     # copy from client
+
     full_msg = chatlib.build_message(code, msg)
+
+    print(code, msg)
+    print(full_msg)
     print("[SERVER] ", full_msg)  # Debug print
     conn.send(msg.encode())
 
@@ -121,16 +126,25 @@ def handle_login_message(conn, data):
 
     # Implement code ...
     # To check later
+    users1 = load_user_database()
     list_of_words = chatlib.split_data(data, 2)
     user_name = list_of_words[0]
     user_password = list_of_words[1]
-    if user_name not in users:
+    print(129)
+    # dict_password = users.get(user_name).split(",")[0].split(" ")[0]
+    print(129)
+    print(user_name, user_password)
+    if user_name not in users1:
+        print(134)
         build_and_send_message(conn, ERROR_MSG, "The username doesn't exist. Try another username")
     else:
-        dict_password = users.get(user_name).split(",")[0].split(" ")[0]
+        print(137)
+        dict_password = users1.get(user_name).get("password")
+        print(user_name, user_password, dict_password)
         if user_password != dict_password:
             build_and_send_message(conn, ERROR_MSG, "The password is wrong. Try another password")
         else:
+            print(143)
             build_and_send_message(conn, chatlib.PROTOCOL_SERVER["login_ok_msg"], "")
 
 
@@ -143,7 +157,10 @@ def handle_client_message(conn, cmd, data):
     global logged_users  # To be used later
 
     # Implement code ...
+    print(152)
+    print(cmd)
     if cmd == "LOGIN":
+        print(155)
         handle_login_message(conn, data)
     elif cmd == "LOGOUT":
         handle_logout_message(conn)
@@ -161,6 +178,32 @@ def main():
     print("Welcome to Trivia Server!")
 
     # Implement code ...
+    server_socket = setup_socket()
+    client_sockets = []
+    while True:
+        ready_to_read, ready_to_write, in_error = select.select([server_socket] + client_sockets, client_sockets, [])
+        for current_socket in ready_to_read:
+            """If the current socket is the server socket it means that a new client is trying to connect"""
+            if current_socket is server_socket:
+                (client_socket, client_address) = current_socket.accept()
+                print("New client joined!", client_address)
+                client_sockets.append(client_socket)
+            else:
+                print("New data from client")
+                try:
+                    cmd, data = recv_message_and_parse(current_socket)
+                    print(cmd, data)
+                    while cmd != "LOGOUT" and cmd != "":
+                        handle_client_message(current_socket, cmd, data)
+                        print(183)
+                        cmd, data = recv_message_and_parse(current_socket)
+                    print("Connection closed")
+                    client_sockets.remove(current_socket)
+                    current_socket.close()
+                except:
+                    client_sockets.remove(current_socket)
+                    current_socket.close()
+                    # print("The active sockets are: " + client_sockets)
 
 
 if __name__ == '__main__':

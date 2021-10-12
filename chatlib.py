@@ -69,7 +69,8 @@ def build_message(cmd, data):
     else:
         return ERROR_RETURN
     if cmd != "LOGIN" and cmd != "LOGOUT" and cmd != "LOGGED" and cmd != "GET_QUESTION" \
-            and cmd != "SEND_ANSWER" and cmd != "MY_SCORE" and cmd != "HIGHSCORE":
+            and cmd != "SEND_ANSWER" and cmd != "MY_SCORE" and cmd != "HIGHSCORE" and cmd != "LOGIN_OK"\
+            and cmd != "LOGGED_ANSWER" and cmd != "LOGIN_OK":
         return ERROR_RETURN
     else:
         full_msg += cmd
