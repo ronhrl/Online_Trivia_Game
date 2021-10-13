@@ -31,6 +31,8 @@ def recv_message_and_parse(conn):
     # Implement Code
     # ..
     full_msg = conn.recv(1024).decode()
+    print(34)
+    print(full_msg)
     cmd, data = chatlib.parse_message(full_msg)
     return cmd, data
 
@@ -76,13 +78,19 @@ def logout(conn):
 
 def build_send_recv_parse(conn, cmd, data):
     build_and_send_message(conn, cmd, data)
+    print(79)
+    print(cmd, data)
     msg_code, data = recv_message_and_parse(conn)
+    print(msg_code, data)
     return msg_code, data
 
 
 def get_score(conn):
     msg_code, data = build_send_recv_parse(conn, chatlib.PROTOCOL_CLIENT["my_score_msg"], "")
-    if "YOUR SCORE" not in msg_code:
+    print(85)
+    print(msg_code, data)
+
+    if "YOUR_SCORE" not in msg_code:
         print("Error")
     else:
         print(data)
@@ -133,6 +141,7 @@ def main():
         if user_choose == 'p':
             play_question(client_socket)
         elif user_choose == 's':
+            print(136)
             get_score(client_socket)
         elif user_choose == 'h':
             get_highscore(client_socket)

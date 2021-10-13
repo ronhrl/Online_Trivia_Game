@@ -98,6 +98,7 @@ def send_error(conn, error_msg):
 def handle_getscore_message(conn, username):
     global users
     # Implement this in later chapters
+
     users1 = load_user_database()
     score = users1.get(username).get("score")
     build_and_send_message(conn, chatlib.PROTOCOL_SERVER["your_score_msg"], score)
@@ -110,13 +111,12 @@ def handle_highscore_message(conn):
 def handle_logged_message(conn):
     list_of_users = list()
     users_data = ""
-    for user in logged_users.keys():
-        list_of_users.append(user)
+    for user in logged_users:
+        list_of_users.append(logged_users[user])
     for i in range(0, len(list_of_users) - 1):
         users_data += list_of_users[i]
         users_data += ','
     users_data += list_of_users[len(list_of_users) - 1]
-    users_data += ','
     build_and_send_message(conn, chatlib.PROTOCOL_SERVER["logged_answer_msg"], users_data)
 
 
@@ -129,6 +129,7 @@ def handle_logout_message(conn):
     global logged_users
 
     # Implement code ...
+    logged_users.pop(conn)
     conn.close()
 
 
@@ -153,10 +154,10 @@ def handle_login_message(conn, data):
     else:
         dict_password = users1.get(user_name).get("password")
         if user_password != dict_password:
-            print(135)
             build_and_send_message(conn, ERROR_MSG, "The password is wrong. Try another password")
         else:
             build_and_send_message(conn, chatlib.PROTOCOL_SERVER["login_ok_msg"], "")
+            logged_users[conn.getpeername()] = user_name
 
 
 def handle_client_message(conn, cmd, data):
@@ -172,8 +173,13 @@ def handle_client_message(conn, cmd, data):
         handle_login_message(conn, data)
     elif cmd == "LOGOUT":
         handle_logout_message(conn)
-    elif cmd == "GET_SCORE":
-        handle_getscore_message(conn, data)
+    elif cmd == "MY_SCORE":
+        user_name = logged_users[conn.getpeername()]
+        handle_getscore_message(conn, user_name)
+    elif cmd == "HIGHSCORE":
+        handle_highscore_message(conn)
+    elif cmd == "LOGGED":
+        handle_logged_message(conn)
     else:
         build_and_send_message(conn, ERROR_MSG, "The command didn't found. Please choose another command.")
 
@@ -200,9 +206,7 @@ def main():
                 print("New data from client")
                 try:
                     cmd, data = recv_message_and_parse(current_socket)
-                    print(181)
                     # handle_getscore_message(current_socket, data)
-                    print(cmd, data)
                     while cmd != "LOGOUT" and cmd != "":
                         handle_client_message(current_socket, cmd, data)
                         cmd, data = recv_message_and_parse(current_socket)
