@@ -68,9 +68,11 @@ def build_message(cmd, data):
         data_len_out = str(data_len_in)
     else:
         return ERROR_RETURN
+    # To check later if it can be shorter
     if cmd != "LOGIN" and cmd != "LOGOUT" and cmd != "LOGGED" and cmd != "GET_QUESTION" \
             and cmd != "SEND_ANSWER" and cmd != "MY_SCORE" and cmd != "HIGHSCORE" and cmd != "LOGIN_OK"\
-            and cmd != "LOGGED_ANSWER" and cmd != "LOGIN_OK":
+            and cmd != "LOGGED_ANSWER" and cmd != "YOUR_QUESTION" and cmd != "CORRECT_ANSWER" and cmd != "WRONG_ANSWER"\
+            and cmd != "YOUR_SCORE" and cmd != "ALL_SCORE" and cmd != "NO_QUESTION":
         return ERROR_RETURN
     else:
         full_msg += cmd

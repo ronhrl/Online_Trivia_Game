@@ -17,7 +17,6 @@ def build_and_send_message(conn, code, data):
     # Implement Code
     msg = chatlib.build_message(code, data)
     print("The message is: " + msg)
-    print(conn)
     conn.send(msg.encode())
 
 
@@ -55,10 +54,8 @@ def login(conn):
     user_pass = username + "#" + password
     # Implement code
     while True:
-        print(57)
         build_and_send_message(conn, chatlib.PROTOCOL_CLIENT["login_msg"], user_pass)
         cmd, data = recv_message_and_parse(conn)
-        print(cmd, data)
         if cmd is not None and data is not None:
             print("Logged in")
             return

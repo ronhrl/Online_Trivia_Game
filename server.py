@@ -20,13 +20,11 @@ SERVER_IP = "127.0.0.1"
 
 def build_and_send_message(conn, code, msg):
     # copy from client
-
     full_msg = chatlib.build_message(code, msg)
-
-    print(code, msg)
-    print(full_msg)
+    if full_msg is None:
+        full_msg = ERROR_MSG + msg
     print("[SERVER] ", full_msg)  # Debug print
-    conn.send(msg.encode())
+    conn.send(full_msg.encode())
 
 
 def recv_message_and_parse(conn):
@@ -130,21 +128,14 @@ def handle_login_message(conn, data):
     list_of_words = chatlib.split_data(data, 2)
     user_name = list_of_words[0]
     user_password = list_of_words[1]
-    print(129)
-    # dict_password = users.get(user_name).split(",")[0].split(" ")[0]
-    print(129)
-    print(user_name, user_password)
     if user_name not in users1:
-        print(134)
         build_and_send_message(conn, ERROR_MSG, "The username doesn't exist. Try another username")
     else:
-        print(137)
         dict_password = users1.get(user_name).get("password")
-        print(user_name, user_password, dict_password)
         if user_password != dict_password:
+            print(135)
             build_and_send_message(conn, ERROR_MSG, "The password is wrong. Try another password")
         else:
-            print(143)
             build_and_send_message(conn, chatlib.PROTOCOL_SERVER["login_ok_msg"], "")
 
 
@@ -157,10 +148,7 @@ def handle_client_message(conn, cmd, data):
     global logged_users  # To be used later
 
     # Implement code ...
-    print(152)
-    print(cmd)
     if cmd == "LOGIN":
-        print(155)
         handle_login_message(conn, data)
     elif cmd == "LOGOUT":
         handle_logout_message(conn)
@@ -192,10 +180,10 @@ def main():
                 print("New data from client")
                 try:
                     cmd, data = recv_message_and_parse(current_socket)
+                    print(181)
                     print(cmd, data)
                     while cmd != "LOGOUT" and cmd != "":
                         handle_client_message(current_socket, cmd, data)
-                        print(183)
                         cmd, data = recv_message_and_parse(current_socket)
                     print("Connection closed")
                     client_sockets.remove(current_socket)
