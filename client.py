@@ -128,8 +128,8 @@ def main():
     client_socket = connect()
     login(client_socket)
     while True:
-        user_choose = input("p \t\tPlay a trivia question\n s \t\tget your score\n h \t\tget high scores\n "
-                            "l \t\tGet logged users\n q \t\tQuit")
+        user_choose = input("p \tPlay a trivia question\ns \tget your score\nh \tget high scores\n"
+                            "l \tGet logged users\nq \tQuit\n")
         if user_choose == 'p':
             play_question(client_socket)
         elif user_choose == 's':

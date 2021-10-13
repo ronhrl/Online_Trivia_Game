@@ -98,6 +98,26 @@ def send_error(conn, error_msg):
 def handle_getscore_message(conn, username):
     global users
     # Implement this in later chapters
+    users1 = load_user_database()
+    score = users1.get(username).get("score")
+    build_and_send_message(conn, chatlib.PROTOCOL_SERVER["your_score_msg"], score)
+
+
+def handle_highscore_message(conn):
+    pass
+
+
+def handle_logged_message(conn):
+    list_of_users = list()
+    users_data = ""
+    for user in logged_users.keys():
+        list_of_users.append(user)
+    for i in range(0, len(list_of_users) - 1):
+        users_data += list_of_users[i]
+        users_data += ','
+    users_data += list_of_users[len(list_of_users) - 1]
+    users_data += ','
+    build_and_send_message(conn, chatlib.PROTOCOL_SERVER["logged_answer_msg"], users_data)
 
 
 def handle_logout_message(conn):
@@ -181,6 +201,7 @@ def main():
                 try:
                     cmd, data = recv_message_and_parse(current_socket)
                     print(181)
+                    # handle_getscore_message(current_socket, data)
                     print(cmd, data)
                     while cmd != "LOGOUT" and cmd != "":
                         handle_client_message(current_socket, cmd, data)
