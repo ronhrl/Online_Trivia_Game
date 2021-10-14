@@ -102,7 +102,10 @@ def parse_message(data):
             num = word
     if "LOGIN" not in list_data[0] and "LOGOUT" not in list_data[0] and "LOGGED" not in list_data[0] \
             and "GET_QUESTION" not in list_data[0] and "SEND_ANSWER" not in list_data[0] \
-            and "MY_SCORE" not in list_data[0] and "HYSCORE" not in list_data[0]:
+            and "MY_SCORE" not in list_data[0] and "HYGHSCORE" not in list_data[0] and "LOGIN_OK" not in list_data[0] \
+            and "LOGGED_ANSWER" not in list_data[0] and "YOUR_QUESTION" not in list_data[0] \
+            and "CORRECT_ANSWER" not in list_data[0] and "WRONG_ANSWER" not in list_data[0] \
+            and "YOUR_SCORE" not in list_data[0] and "ALL_SCORE" not in list_data[0] and "NO_QUESTIONS" not in list_data[0]:
         cmd = ERROR_RETURN
         msg = ERROR_RETURN
         return cmd, msg

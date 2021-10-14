@@ -1,7 +1,7 @@
 ##############################################################################
 # server.py
 ##############################################################################
-
+import random
 import socket
 import chatlib
 import select
@@ -10,6 +10,7 @@ import select
 users = {}
 questions = {}
 logged_users = {}  # a dictionary of client hostnames to usernames - will be used later
+question_num = 1
 
 ERROR_MSG = "Error! "
 SERVER_PORT = 5678
@@ -20,7 +21,7 @@ SERVER_IP = "127.0.0.1"
 
 def build_and_send_message(conn, code, msg):
     # copy from client
-    full_msg = chatlib.build_message(code, msg)
+    full_msg = chatlib.build_message(code, str(msg))
     if full_msg is None:
         full_msg = ERROR_MSG + msg
     print("[SERVER] ", full_msg)  # Debug print
@@ -44,7 +45,7 @@ def load_questions():
     Returns: questions dictionary
     """
     questions = {
-        2313: {"question": "How much is 2+2", "answers": ["3", "4", "2", "1"], "correct": 2},
+        2313: {"question": "How much is 2+2?", "answers": ["3", "4", "2", "1"], "correct": 2},
         4122: {"question": "What is the capital of France?", "answers": ["Lion", "Marseille", "Paris", "Montpellier"],
                "correct": 3}
     }
@@ -98,7 +99,6 @@ def send_error(conn, error_msg):
 def handle_getscore_message(conn, username):
     global users
     # Implement this in later chapters
-
     users1 = load_user_database()
     score = users1.get(username).get("score")
     build_and_send_message(conn, chatlib.PROTOCOL_SERVER["your_score_msg"], score)
@@ -160,6 +160,15 @@ def handle_login_message(conn, data):
             logged_users[conn.getpeername()] = user_name
 
 
+def handle_question_message(conn):
+    question = create_random_question()
+    build_and_send_message(conn, chatlib.PROTOCOL_SERVER["your_question_msg"], question)
+
+
+def handle_answer_message(conn, username, data):
+
+
+
 def handle_client_message(conn, cmd, data):
     """
     Gets message code and data and calls the right function to handle command
@@ -180,15 +189,36 @@ def handle_client_message(conn, cmd, data):
         handle_highscore_message(conn)
     elif cmd == "LOGGED":
         handle_logged_message(conn)
+    elif cmd == "GET_QUESTION":
+        handle_question_message(conn)
     else:
         build_and_send_message(conn, ERROR_MSG, "The command didn't found. Please choose another command.")
+
+
+def create_random_question():
+    global question_num
+    question_dict = load_questions()
+    rand_question = random.choice(list(question_dict.values()))
+    quest = rand_question.get("question")
+    answers = rand_question.get("answers")
+    question_to_send = ""
+    question_to_send += str(question_num)
+    question_to_send += "#"
+    question_to_send += quest
+    question_to_send += "#"
+    for i in range(0, len(answers) - 1):
+        question_to_send += answers[i]
+        question_to_send += "#"
+    question_to_send += answers[len(answers) - 1]
+    question_num += 1
+    return question_to_send
 
 
 def main():
     # Initializes global users and questions dicionaries using load functions, will be used later
     global users
     global questions
-
+    create_random_question()
     print("Welcome to Trivia Server!")
 
     # Implement code ...
